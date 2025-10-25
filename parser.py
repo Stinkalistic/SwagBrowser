@@ -1,0 +1,189 @@
+from html.parser import HTMLParser
+from cmu_graphics import *
+import argparse,subprocess,os,requests
+
+linkopener=1
+if not linkopener:
+    import webbrowser as web
+
+app.lt=""
+app.y=10
+app.x=20
+app.elements=[]
+app.indented=False
+app.yold=10
+app.attrs=[]
+app.lastimg=""
+
+argparser = argparse.ArgumentParser(description='super epic html parser')
+argparser.add_argument('-i',"--input", help='Path to the input file.')
+argparser.add_argument("-u","--url",help="")
+args=argparser.parse_args()
+
+try:
+    app.elements.append(Image(args.url+"/favicon.ico",app.x-10,app.y))
+    app.y+=(app.elements[-1].bottom-app.elements[-1].top)+10
+except:
+    print(args.url+"/favicon.ico")
+    print("failed to load favicon")
+    
+try:
+    print("Accessing file from "+args.url)
+except:
+    pass
+
+def left():
+    if app.indented:
+        app.elements[-1].left=app.x+20
+    else:
+        app.elements[-1].left=app.x
+    app.x=app.elements[-1].right+10
+
+            
+class MyHTMLParser(HTMLParser):
+    def handle_starttag(self,tag,attrs):
+        app.lt=tag
+        app.attrs=attrs
+        if tag=="br":
+            app.y+=15
+            app.x=20
+        elif tag=="hr":
+            app.y+=20
+            app.elements.append(Line(5,app.y,395,app.y,fill="grey",lineWidth=1))
+            app.y+=20
+            app.x=20
+    
+    def handle_endtag(self,tag):
+        if tag=="ul" and app.indented:
+            app.indented=False
+        
+        
+    def handle_data(self,data):
+        if app.lt=="text" or app.lt=="p":
+            app.elements.append(Label(data,app.x,app.y))
+            left()
+        elif app.lt=="h1":
+            app.y+=30
+            app.elements.append(Label(data,app.x,app.y,size=20,bold=True))
+            left()
+            app.y+=10
+        elif app.lt=="i" or app.lt=="em":
+            app.elements.append(Label(data,app.x,app.y,italic=True))
+            left()
+        elif app.lt=="u":
+            app.elements.append(Label(data,app.x,app.y))
+            left()
+            app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,lineWidth=1))
+        elif app.lt=="a":
+            app.elements.append(Label(data,app.x,app.y,fill="blue"))
+            app.elements[-1].url=app.attrs[-1][-1]
+            app.elements[-1].type="hyperlink"
+            left()
+            app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,fill="blue",lineWidth=1))
+        elif app.lt=="strong":
+            app.elements.append(Label(data,app.x,app.y,bold=True))
+            left()
+        elif app.lt=="ul":
+            app.y+=20
+            app.elements.append(Label(data,app.x+20,app.y))
+            app.elements[-1].left=30
+            app.y+=20
+            app.indented=True
+        elif app.lt=="li":
+            app.elements.append(Circle(app.x-10,app.y+1,3))
+            left()
+            app.elements.append(Label(data,app.x-10,app.y))
+            app.elements[-1].left=app.elements[-2].right+20
+            app.y+=20
+        elif app.lt=="img":
+            print(app.attrs[0][1],app.lastimg)
+            if app.attrs[0][1]==app.lastimg:
+                app.lastimg=app.attrs[0][1]
+            else:
+                if not os.path.exists(data):
+                    #subprocess.run("curl -O "+args.url+app.attrs[0][1])
+                    if app.attrs[0][1].startswith("https://"):
+                        if not app.attrs[0][1].endswith(".svg"):
+                            try:
+                                #print(app.attrs[0][1])
+                                app.elements.append(Image(app.attrs[0][1],app.x-10,app.y))
+                                app.lastimg=app.attrs[0][1]
+                            except:
+                                pass
+                    else:
+                        try:
+                            if not args.url.endswith("/"):
+                                args.url=args.url+"/"
+                            app.elements.append(Image(args.url+app.attrs[0][1],app.x-10,app.y))
+                            app.lastimg=app.attrs[0][1]
+                        except Exception as e:
+                            print(e)
+                            app.elements.append(Image("missing.png",app.x-10,app.y))
+                else:
+                    app.elements.append(Image(data,app.x-10,app.y))
+                    app.lastimg=app.attrs[0][1]
+                app.y+=(app.elements[-1].bottom-app.elements[-1].top)+10            
+        elif app.lt=="title":
+            print(data)
+        elif app.lt=="color":
+            app.background=data
+        elif app.lt=="button":
+            app.elements.append(Label(data,app.x,app.y))
+            left()
+            app.elements.append(Rect(app.x,app.y,20,app.elements[-1].right-app.elements[-1].left+20))
+            
+        if app.y>app.yold:
+            app.yold=app.y
+            app.x=20
+
+
+
+
+parser=MyHTMLParser()
+
+if not args.input:
+    i=input("enter html or name of file: \n")
+else:
+    i=args.input
+try:
+    with open(i,"r") as f:
+        lines=f.readlines()
+        for j in range(len(lines)):
+            parser.feed(lines[j])
+except:
+    parser.feed(i)
+
+def onMousePress(x,y):
+    for element in app.elements:
+        if element.contains(x,y):
+            try:
+                element.url
+                if element.type=="hyperlink":
+                    element.fill="purple"
+                    app.elements[app.elements.index(element)+1].fill="purple"
+                    print("opening URL "+element.url)
+                    if linkopener:
+                        if element.url.startswith("http"):
+                            subprocess.run("py browser.py -u "+element.url)
+                        else:
+                            subprocess.run("py browser.py -u "+args.url+element.url)
+                    else:
+                        web.open(element.url)
+                    
+            except:
+                pass
+def onKeyHold(keys):
+    if "down" in keys:
+        for element in app.elements:
+            element.centerY-=5
+    if "up" in keys:
+        for element in app.elements:
+            element.centerY+=5
+    if "right" in keys:
+        for element in app.elements:
+            element.centerX-=5
+    if "left" in keys:
+        for element in app.elements:
+            element.centerX+=5
+
+cmu_graphics.run()
