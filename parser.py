@@ -14,6 +14,7 @@ app.indented=False
 app.yold=10
 app.attrs=[]
 app.lastimg=""
+src=""
 
 argparser = argparse.ArgumentParser(description='super epic html parser')
 argparser.add_argument('-i',"--input", help='Path to the input file.')
@@ -59,6 +60,7 @@ class MyHTMLParser(HTMLParser):
         
         
     def handle_data(self,data):
+        global src
         if app.lt=="text" or app.lt=="p":
             app.elements.append(Label(data,app.x,app.y))
             left()
@@ -96,32 +98,38 @@ class MyHTMLParser(HTMLParser):
             app.elements[-1].left=app.elements[-2].right+20
             app.y+=20
         elif app.lt=="img":
-            print(app.attrs[0][1],app.lastimg)
-            if app.attrs[0][1]==app.lastimg:
-                app.lastimg=app.attrs[0][1]
+            for i in range(len(app.attrs)):
+                if app.attrs[i][0]=="src":
+                    src=app.attrs[i][1]
+            if src==app.lastimg:
+                app.lastimg=src
             else:
                 if not os.path.exists(data):
-                    #subprocess.run("curl -O "+args.url+app.attrs[0][1])
-                    if app.attrs[0][1].startswith("https://"):
-                        if not app.attrs[0][1].endswith(".svg"):
-                            try:
-                                #print(app.attrs[0][1])
-                                app.elements.append(Image(app.attrs[0][1],app.x-10,app.y))
-                                app.lastimg=app.attrs[0][1]
-                            except:
-                                pass
+                    for i in range(len(app.attrs)):
+                        if app.attrs[i][0]=="src":
+                            src=app.attrs[i][1]
+                    if src.startswith("https://"):
+                        try:
+                            app.elements.append(Image(src,app.x-10,app.y))
+                            app.lastimg=src
+                        except:
+                            pass
                     else:
                         try:
                             if not args.url.endswith("/"):
                                 args.url=args.url+"/"
-                            app.elements.append(Image(args.url+app.attrs[0][1],app.x-10,app.y))
-                            app.lastimg=app.attrs[0][1]
+                            if not args.url.endswith(".html/"):
+                                print(args.url+src)
+                                app.elements.append(Image(args.url+src,app.x-10,app.y))
+                            else:
+                                app.elements.append(Image(os.path.dirname(args.url.removesuffix("/"))+"/"+src,app.x-10,app.y))
+                            app.lastimg=src
                         except Exception as e:
                             print(e)
                             app.elements.append(Image("missing.png",app.x-10,app.y))
                 else:
                     app.elements.append(Image(data,app.x-10,app.y))
-                    app.lastimg=app.attrs[0][1]
+                    app.lastimg=src
                 app.y+=(app.elements[-1].bottom-app.elements[-1].top)+10            
         elif app.lt=="title":
             print(data)
