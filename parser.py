@@ -21,12 +21,13 @@ argparser.add_argument('-i',"--input", help='Path to the input file.')
 argparser.add_argument("-u","--url",help="")
 args=argparser.parse_args()
 
-try:
-    app.elements.append(Image(args.url+"/favicon.ico",app.x-10,app.y))
-    app.y+=(app.elements[-1].bottom-app.elements[-1].top)+10
-except:
-    print(args.url+"/favicon.ico")
-    print("failed to load favicon")
+if args.url:
+    try:
+        app.elements.append(Image(args.url+"/favicon.ico",app.x-10,app.y))
+        app.y+=(app.elements[-1].bottom-app.elements[-1].top)+10
+    except:
+        print(args.url+"/favicon.ico")
+        print("failed to load favicon")
     
 try:
     print("Accessing file from "+args.url)
@@ -61,9 +62,14 @@ class MyHTMLParser(HTMLParser):
         
     def handle_data(self,data):
         global src
-        if app.lt=="text" or app.lt=="p":
+        if app.lt=="text":
             app.elements.append(Label(data,app.x,app.y))
             left()
+        elif app.lt=="p":
+            app.y+=20
+            app.elements.append(Label(data,app.x,app.y))
+            left()
+            app.y+=20
         elif app.lt=="h1":
             app.y+=30
             app.elements.append(Label(data,app.x,app.y,size=20,bold=True))
@@ -174,7 +180,7 @@ def onMousePress(x,y):
                         if element.url.startswith("http"):
                             subprocess.run("py browser.py -u "+element.url)
                         else:
-                            subprocess.run("py browser.py -u "+args.url+element.url)
+                            subprocess.run("py browser.py -u "+args.url+"/"+element.url)
                     else:
                         web.open(element.url)
                     

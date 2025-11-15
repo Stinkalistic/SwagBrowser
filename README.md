@@ -39,4 +39,4 @@ The MOST EPIC web browser ever made.
  - [UCSD](https://ucsd.edu/)
  - [IWBTG](https://kayin.moe/iwbtg/)
  - [Super Tux](https://www.supertux.org/)
- - [fre:ac](https://freac.org/)
+  - [Fabrice Bellard](https://bellard.org/)
