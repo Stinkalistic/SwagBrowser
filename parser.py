@@ -179,8 +179,11 @@ def onMousePress(x,y):
                     if linkopener:
                         if element.url.startswith("http"):
                             subprocess.run("py browser.py -u "+element.url)
-                        else:
+                        elif element.url.endswith(".html") or "/" in element.url:
                             subprocess.run("py browser.py -u "+args.url+"/"+element.url)
+                        else:
+                            print("downloading ",element.url)
+                            subprocess.run("curl "+args.url+"/"+element.url+" -O -L")
                     else:
                         web.open(element.url)
                     

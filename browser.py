@@ -17,6 +17,6 @@ try:
     with open("html.html","w") as f:
         f.write(r.text)
 except:
-    subprocess.run("curl -L -v -o html.html "+url)
+    subprocess.run("curl -L -s -o html.html "+url)
 
 subprocess.run("py parser.py -i html.html -u "+url)
