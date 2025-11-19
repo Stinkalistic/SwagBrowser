@@ -142,9 +142,13 @@ class MyHTMLParser(HTMLParser):
         elif app.lt=="color":
             app.background=data
         elif app.lt=="button":
-            app.elements.append(Label(data,app.x,app.y))
+            temp=Label(data,app.x,app.y)
+            app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="lightGrey",border="black"),Label(data,app.x,app.y)))
             left()
-            app.elements.append(Rect(app.x,app.y,20,app.elements[-1].right-app.elements[-1].left+20))
+            temp.visible=False
+        if app.y>app.yold:
+            app.yold=app.y
+            app.x=20
             
         if app.y>app.yold:
             app.yold=app.y
