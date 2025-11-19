@@ -10,6 +10,7 @@ The MOST EPIC web browser ever made.
  - No ads
  - Super Epic
  - Can open hyperlinks
+ - Can download files
 
 # Shortcomings
 

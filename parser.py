@@ -181,9 +181,10 @@ def onMousePress(x,y):
                     app.elements[app.elements.index(element)+1].fill="purple"
                     print("opening URL "+element.url)
                     if linkopener:
+                        print(os.path.basename(element.url))
                         if element.url.startswith("http"):
                             subprocess.run("py browser.py -u "+element.url)
-                        elif element.url.endswith(".html") or "/" in element.url:
+                        elif os.path.basename(element.url).endswith(".html") or "/" in os.path.basename(element.url) or not "." in os.path.basename(element.url):
                             subprocess.run("py browser.py -u "+args.url+"/"+element.url)
                         else:
                             print("downloading ",element.url)
