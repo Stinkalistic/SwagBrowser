@@ -41,3 +41,6 @@ The MOST EPIC web browser ever made.
  - [IWBTG](https://kayin.moe/iwbtg/)
  - [Super Tux](https://www.supertux.org/)
   - [Fabrice Bellard](https://bellard.org/)
+  - [The World Wide Web Project](https://info.cern.ch/hypertext/WWW/TheProject.html)
+  - [Better Motherfucking Website](http://bettermotherfuckingwebsite.com/)
+  - [Matthias Wandel](https://sentex.net/~mwandel/)

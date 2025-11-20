@@ -23,7 +23,10 @@ args=argparser.parse_args()
 
 if args.url:
     try:
-        app.elements.append(Image(args.url+"/favicon.ico",app.x-10,app.y))
+        if args.url.endswith(".html"):
+            app.elements.append(Image(os.path.basename(args.url)+"/favicon.ico",app.x-10,app.y))
+        else:
+            app.elements.append(Image(args.url+"/favicon.ico",app.x-10,app.y))
         app.y+=(app.elements[-1].bottom-app.elements[-1].top)+10
     except:
         print(args.url+"/favicon.ico")
@@ -181,12 +184,14 @@ def onMousePress(x,y):
                     app.elements[app.elements.index(element)+1].fill="purple"
                     print("opening URL "+element.url)
                     if linkopener:
-                        print(os.path.basename(element.url))
                         if element.url.startswith("http"):
                             subprocess.run("py browser.py -u "+element.url)
                         elif os.path.basename(element.url).endswith(".html") or "/" in os.path.basename(element.url) or not "." in os.path.basename(element.url):
-                            subprocess.run("py browser.py -u "+args.url+"/"+element.url)
-                        else:
+                            if args.url.endswith(".html"):
+                                subprocess.run("py browser.py -u "+os.path.dirname(args.url)+"/"+element.url)
+                            else:
+                                subprocess.run("py browser.py -u "+args.url+"/"+element.url)
+                        elif "." in os.path.basename(element.url):
                             print("downloading ",element.url)
                             subprocess.run("curl "+args.url+"/"+element.url+" -O -L")
                     else:
