@@ -1,8 +1,11 @@
-import subprocess, argparse,requests
+import subprocess, argparse,requests,os,sys
 
+os.chdir(os.getcwd())
 argparser=argparse.ArgumentParser(description="supre epic browser")
 argparser.add_argument("-u","--url",help="tha url")
 args=argparser.parse_args()
+
+print(sys.executable)
 
 if not args.url:
     url=input("enter website URL: \n")
@@ -18,5 +21,7 @@ try:
         f.write(r.text)
 except:
     subprocess.run("curl -L -s -o html.html "+url)
-
-subprocess.run("py parser.py -i html.html -u "+url)
+try:
+    subprocess.run("py parser.py -i html.html -u "+url)
+except:
+    subprocess.run("python parser.py -i html.html -u "+url)
