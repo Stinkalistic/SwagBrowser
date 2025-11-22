@@ -44,3 +44,5 @@ The MOST EPIC web browser ever made.
   - [The World Wide Web Project](https://info.cern.ch/hypertext/WWW/TheProject.html)
   - [Better Motherfucking Website](http://bettermotherfuckingwebsite.com/)
   - [Matthias Wandel](https://sentex.net/~mwandel/)
+  - [Dropbox](https://dropbox.com)
+  - [TempleOS](https://templeos.org)

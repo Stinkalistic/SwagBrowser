@@ -126,8 +126,8 @@ class MyHTMLParser(HTMLParser):
                     else:
                         try:
                             if not args.url.endswith(".htm"):
-                                print(args.url+src)
-                                app.elements.append(Image(args.url+src,app.x-10,app.y))
+                                print(args.url+"/"+src)
+                                app.elements.append(Image(args.url+"/"+src,app.x-10,app.y))
                             else:
                                 app.elements.append(Image(os.path.dirname(args.url.removesuffix("/"))+"/"+src,app.x-10,app.y))
                             app.lastimg=src
