@@ -23,7 +23,7 @@ args=argparser.parse_args()
 
 if args.url:
     try:
-        if args.url.endswith(".html"):
+        if args.url.endswith(".htm"):
             app.elements.append(Image(os.path.basename(args.url)+"/favicon.ico",app.x-10,app.y))
         else:
             app.elements.append(Image(args.url+"/favicon.ico",app.x-10,app.y))
@@ -125,9 +125,7 @@ class MyHTMLParser(HTMLParser):
                             pass
                     else:
                         try:
-                            if not args.url.endswith("/"):
-                                args.url=args.url+"/"
-                            if not args.url.endswith(".html/"):
+                            if not args.url.endswith(".htm"):
                                 print(args.url+src)
                                 app.elements.append(Image(args.url+src,app.x-10,app.y))
                             else:
@@ -186,8 +184,8 @@ def onMousePress(x,y):
                     if linkopener:
                         if element.url.startswith("http"):
                             subprocess.run("py browser.py -u "+element.url)
-                        elif os.path.basename(element.url).endswith(".html") or "/" in os.path.basename(element.url) or not "." in os.path.basename(element.url):
-                            if args.url.endswith(".html"):
+                        elif os.path.basename(element.url).endswith(".htm") or "/" in os.path.basename(element.url) or not "." in os.path.basename(element.url):
+                            if args.url.endswith(".htm"):
                                 subprocess.run("py browser.py -u "+os.path.dirname(args.url)+"/"+element.url)
                             else:
                                 subprocess.run("py browser.py -u "+args.url+"/"+element.url)
