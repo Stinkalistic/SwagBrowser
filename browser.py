@@ -1,11 +1,9 @@
-import subprocess, argparse,requests,os,sys
+import subprocess, argparse,requests,os
 
 os.chdir(os.getcwd())
 argparser=argparse.ArgumentParser(description="supre epic browser")
 argparser.add_argument("-u","--url",help="tha url")
 args=argparser.parse_args()
-
-print(sys.executable)
 
 if not args.url:
     url=input("enter website URL: \n")
