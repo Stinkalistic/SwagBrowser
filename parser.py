@@ -125,11 +125,11 @@ class MyHTMLParser(HTMLParser):
                             pass
                     else:
                         try:
-                            if not args.url.endswith(".htm"):
+                            if not args.url.endswith(".htm") and not args.url.endswith(".html"):
                                 print(args.url+"/"+src)
                                 app.elements.append(Image(args.url+"/"+src,app.x-10,app.y))
                             else:
-                                app.elements.append(Image(os.path.dirname(args.url.removesuffix("/"))+"/"+src,app.x-10,app.y))
+                                app.elements.append(Image(os.path.dirname(args.url)+"/"+src,app.x-10,app.y))
                             app.lastimg=src
                         except Exception as e:
                             print(e)
@@ -183,12 +183,21 @@ def onMousePress(x,y):
                     print("opening URL "+element.url)
                     if linkopener:
                         if element.url.startswith("http"):
-                            subprocess.run("py browser.py -u "+element.url)
-                        elif os.path.basename(element.url).endswith(".htm") or "/" in os.path.basename(element.url) or not "." in os.path.basename(element.url):
-                            if args.url.endswith(".htm"):
-                                subprocess.run("py browser.py -u "+os.path.dirname(args.url)+"/"+element.url)
+                            try:
+                                subprocess.run("py browser.py -u "+element.url)
+                            except:
+                                subprocess.run("python browser.py -u "+element.url)
+                        elif os.path.basename(element.url).endswith(".htm") or "/" in os.path.basename(element.url) or not "." in os.path.basename(element.url) or os.path.basename(element.url).endswith(".html"):
+                            if args.url.endswith(".htm") or args.url.endswith(".html"):
+                                try:
+                                    subprocess.run("py browser.py -u "+os.path.dirname(args.url)+"/"+element.url)
+                                except:
+                                    subprocess.run("python browser.py -u "+os.path.dirname(args.url)+"/"+element.url)
                             else:
-                                subprocess.run("py browser.py -u "+args.url+"/"+element.url)
+                                try:
+                                    subprocess.run("py browser.py -u "+args.url+"/"+element.url)
+                                except:
+                                    subprocess.run("py browser.py -u "+args.url+"/"+element.url)
                         elif "." in os.path.basename(element.url):
                             print("downloading ",element.url)
                             subprocess.run("curl "+args.url+"/"+element.url+" -O -L")
