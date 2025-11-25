@@ -160,7 +160,13 @@ class MyHTMLParser(HTMLParser):
                 app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="lightGrey",border="black"),Label(os.path.basename(src),app.x,app.y)))
                 left()
                 temp.visible=False
-                app.elements[-1].sound=Sound(src)
+                if src.startswith("http"):
+                    app.elements[-1].sound=Sound(src)
+                else:
+                    if args.url.endswith(".html") or args.url.endswith(".htm"):
+                        app.elements[-1].sound=Sound((os.path.dirname(args.url)+"/"+src))
+                    else:
+                        app.elements[-1].sound=Sound((args.url+src))
                 app.lastsnd=src
         
         if app.y>app.yold:
