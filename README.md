@@ -3,7 +3,7 @@ The MOST EPIC web browser ever made.
 
 **Features**
 
- - Has support for 12 html tags
+ - Has support for 14 html tags
  - Not a chromium fork
  - Image support
  - Favicon support
@@ -11,6 +11,7 @@ The MOST EPIC web browser ever made.
  - Super Epic
  - Can open hyperlinks
  - Can download files
+ - Can play sounds
 
 # Shortcomings
 
@@ -18,7 +19,7 @@ The MOST EPIC web browser ever made.
  - Does not support CSS
  - Does not support WASM
  - Does not support captchas
- - Does not support more than 12 html tags
+ - Does not support more than 14 html tags
  - Slow to load websites
  - Majority of websites do not work or look ugly
  - Steals all of your data
@@ -46,3 +47,4 @@ The MOST EPIC web browser ever made.
   - [Matthias Wandel](https://sentex.net/~mwandel/)
   - [Dropbox](https://dropbox.com)
   - [TempleOS](https://templeos.org)
+  - [Peeps Research](http://www.peepresearch.org/)

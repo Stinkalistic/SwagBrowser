@@ -14,6 +14,7 @@ app.indented=False
 app.yold=10
 app.attrs=[]
 app.lastimg=""
+app.lastsnd=""
 src=""
 
 argparser = argparse.ArgumentParser(description='super epic html parser')
@@ -117,7 +118,7 @@ class MyHTMLParser(HTMLParser):
                     for i in range(len(app.attrs)):
                         if app.attrs[i][0]=="src":
                             src=app.attrs[i][1]
-                    if src.startswith("https://"):
+                    if src.startswith("http"):
                         try:
                             app.elements.append(Image(src,app.x-10,app.y))
                             app.lastimg=src
@@ -147,10 +148,21 @@ class MyHTMLParser(HTMLParser):
             app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="lightGrey",border="black"),Label(data,app.x,app.y)))
             left()
             temp.visible=False
-        if app.y>app.yold:
-            app.yold=app.y
-            app.x=20
-            
+        elif app.lt=="source":
+            for i in range(len(app.attrs)):
+                if app.attrs[i][0]=="src":
+                    src=app.attrs[i][1]
+            if src==app.lastsnd:
+                app.lastsnd=src
+            else:
+                print(src)
+                temp=Label(os.path.basename(src),app.x,app.y)
+                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="lightGrey",border="black"),Label(os.path.basename(src),app.x,app.y)))
+                left()
+                temp.visible=False
+                app.elements[-1].sound=Sound(src)
+                app.lastsnd=src
+        
         if app.y>app.yold:
             app.yold=app.y
             app.x=20
@@ -205,7 +217,10 @@ def onMousePress(x,y):
                         web.open(element.url)
                     
             except:
-                pass
+                try:
+                    element.sound.play()
+                except:
+                    pass
 def onKeyHold(keys):
     if "down" in keys:
         for element in app.elements:
