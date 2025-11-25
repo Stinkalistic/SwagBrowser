@@ -34,6 +34,7 @@ The MOST EPIC web browser ever made.
 #
 **Websites that work well with swagbrowser:**
 
+ - [SwagBrowser Official Website](https://stinkalistic.github.io/SwagBrowser/)
  - [Pork.com](https://www.pork.com/)
  - [Space Jam 1996](https://www.spacejam.com/1996/)
  - [PyImager](https://stinkalistic.github.io/PyImager/)

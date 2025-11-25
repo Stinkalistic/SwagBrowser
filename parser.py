@@ -134,7 +134,7 @@ class MyHTMLParser(HTMLParser):
                             app.lastimg=src
                         except Exception as e:
                             print(e)
-                            app.elements.append(Image("missing.png",app.x-10,app.y))
+                            app.elements.append(Image("https://cdn.jsdelivr.net/gh/Stinkalistic/SwagBrowser/missing.png",app.x-10,app.y))
                 else:
                     app.elements.append(Image(data,app.x-10,app.y))
                     app.lastimg=src
