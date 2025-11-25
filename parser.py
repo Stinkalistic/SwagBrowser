@@ -218,7 +218,10 @@ def onMousePress(x,y):
                                     subprocess.run("py browser.py -u "+args.url+"/"+element.url)
                         elif "." in os.path.basename(element.url):
                             print("downloading ",element.url)
-                            subprocess.run("curl "+args.url+"/"+element.url+" -O -L")
+                            if not args.url.endswith(".html") and not args.url.endswith(".htm"):
+                                subprocess.run("curl "+args.url+"/"+element.url+" -O -L")
+                            else:
+                                subprocess.run("curl "+os.path.dirname(args.url)+"/"+element.url+" -O -L")
                     else:
                         web.open(element.url)
                     
