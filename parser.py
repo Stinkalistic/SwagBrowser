@@ -17,6 +17,21 @@ app.lastimg=""
 app.lastsnd=""
 src=""
 
+try:
+    with open("settings.cfg","r") as cfg:
+        lines=cfg.readlines()
+        lines=[line.split("=")[1].strip() for line in lines]
+        app.scrollspeed=int(lines[1])
+        app.textcolor=lines[3]
+        app.background=lines[2]
+        if lines[0].lower()=="true":
+            app.background=rgb(55,55,69)
+            app.textcolor="white"        
+except:
+    print("failed to load settings.cfg, using default settings")
+    app.scrollspeed=5
+    app.textcolor="black"
+
 argparser = argparse.ArgumentParser(description='super epic html parser')
 argparser.add_argument('-i',"--input", help='Path to the input file.')
 argparser.add_argument("-u","--url",help="")
@@ -67,44 +82,48 @@ class MyHTMLParser(HTMLParser):
     def handle_data(self,data):
         global src
         if app.lt=="text":
-            app.elements.append(Label(data,app.x,app.y))
+            app.elements.append(Label(data,app.x,app.y,fill=app.textcolor))
             left()
         elif app.lt=="p":
             app.y+=20
-            app.elements.append(Label(data,app.x,app.y))
+            app.elements.append(Label(data,app.x,app.y,fill=app.textcolor))
             left()
             app.y+=20
         elif app.lt=="h1":
             app.y+=30
-            app.elements.append(Label(data,app.x,app.y,size=20,bold=True))
+            app.elements.append(Label(data,app.x,app.y,size=20,bold=True,fill=app.textcolor))
             left()
             app.y+=10
         elif app.lt=="i" or app.lt=="em":
-            app.elements.append(Label(data,app.x,app.y,italic=True))
+            app.elements.append(Label(data,app.x,app.y,italic=True,fill=app.textcolor))
             left()
         elif app.lt=="u":
-            app.elements.append(Label(data,app.x,app.y))
+            app.elements.append(Label(data,app.x,app.y,fill=app.textcolor))
             left()
             app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,lineWidth=1))
         elif app.lt=="a":
-            app.elements.append(Label(data,app.x,app.y,fill="blue"))
+            if app.textcolor=="white":
+                tmp="cyan"
+            else:
+                tmp="blue"
+            app.elements.append(Label(data,app.x,app.y,fill=tmp))
             app.elements[-1].url=app.attrs[-1][-1]
             app.elements[-1].type="hyperlink"
             left()
-            app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,fill="blue",lineWidth=1))
+            app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,fill=tmp,lineWidth=1))
         elif app.lt=="strong":
-            app.elements.append(Label(data,app.x,app.y,bold=True))
+            app.elements.append(Label(data,app.x,app.y,bold=True,fill=app.textcolor))
             left()
         elif app.lt=="ul":
             app.y+=20
-            app.elements.append(Label(data,app.x+20,app.y))
+            app.elements.append(Label(data,app.x+20,app.y,fill=app.textcolor))
             app.elements[-1].left=30
             app.y+=20
             app.indented=True
         elif app.lt=="li":
             app.elements.append(Circle(app.x-10,app.y+1,3))
             left()
-            app.elements.append(Label(data,app.x-10,app.y))
+            app.elements.append(Label(data,app.x-10,app.y,fill=app.textcolor))
             app.elements[-1].left=app.elements[-2].right+20
             app.y+=20
         elif app.lt=="img":
@@ -145,7 +164,7 @@ class MyHTMLParser(HTMLParser):
             app.background=data
         elif app.lt=="button":
             temp=Label(data,app.x,app.y)
-            app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="lightGrey",border="black"),Label(data,app.x,app.y)))
+            app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="lightGrey",border="black"),Label(data,app.x,app.y,fill=app.textcolor)))
             left()
             temp.visible=False
         elif app.lt=="source":
@@ -233,15 +252,15 @@ def onMousePress(x,y):
 def onKeyHold(keys):
     if "down" in keys:
         for element in app.elements:
-            element.centerY-=5
+            element.centerY-=app.scrollspeed
     if "up" in keys:
         for element in app.elements:
-            element.centerY+=5
+            element.centerY+=app.scrollspeed
     if "right" in keys:
         for element in app.elements:
-            element.centerX-=5
+            element.centerX-=app.scrollspeed
     if "left" in keys:
         for element in app.elements:
-            element.centerX+=5
+            element.centerX+=app.scrollspeed
 
 cmu_graphics.run()

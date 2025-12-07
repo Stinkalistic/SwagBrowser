@@ -1,6 +1,6 @@
 import subprocess, argparse,requests,os
 
-os.chdir(os.getcwd())
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 argparser=argparse.ArgumentParser(description="supre epic browser")
 argparser.add_argument("-u","--url",help="tha url")
 args=argparser.parse_args()
