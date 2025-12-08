@@ -12,6 +12,7 @@ The MOST EPIC web browser ever made.
  - Can open hyperlinks
  - Can download files
  - Can play sounds
+ - Supports bookmarks
 
 # Shortcomings
 
@@ -23,7 +24,6 @@ The MOST EPIC web browser ever made.
  - Slow to load websites
  - Majority of websites do not work or look ugly
  - Steals all of your data
- - Does not support bookmarks
  - Does not support extensions
  - Overall very shitty
 

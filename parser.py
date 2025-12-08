@@ -1,7 +1,6 @@
 from html.parser import HTMLParser
 from cmu_graphics import *
 import argparse,subprocess,os,requests
-
 linkopener=1
 if not linkopener:
     import webbrowser as web
@@ -38,6 +37,7 @@ argparser.add_argument("-u","--url",help="")
 args=argparser.parse_args()
 
 if args.url:
+    title=args.url.removeprefix("https://").removeprefix("http://")
     try:
         if args.url.endswith(".htm"):
             app.elements.append(Image(os.path.basename(args.url)+"/favicon.ico",app.x-10,app.y))
@@ -80,7 +80,7 @@ class MyHTMLParser(HTMLParser):
         
         
     def handle_data(self,data):
-        global src
+        global src,title
         if app.lt=="text":
             app.elements.append(Label(data,app.x,app.y,fill=app.textcolor))
             left()
@@ -160,11 +160,15 @@ class MyHTMLParser(HTMLParser):
                 app.y+=(app.elements[-1].bottom-app.elements[-1].top)+10            
         elif app.lt=="title":
             print(data)
+            title=data
         elif app.lt=="color":
             app.background=data
         elif app.lt=="button":
             temp=Label(data,app.x,app.y)
-            app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="lightGrey",border="black"),Label(data,app.x,app.y,fill=app.textcolor)))
+            if app.textcolor!="white":
+                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="lightGrey",border="black"),Label(data,app.x,app.y,fill=app.textcolor)))
+            else:
+                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="grey",border="black"),Label(data,app.x,app.y,fill=app.textcolor)))
             left()
             temp.visible=False
         elif app.lt=="source":
@@ -262,5 +266,18 @@ def onKeyHold(keys):
     if "left" in keys:
         for element in app.elements:
             element.centerX+=app.scrollspeed
-
+            
+def onKeyPress(key):
+    global title
+    if key=="b" and args.url:
+        if os.path.exists("bookmarks.txt"):
+            mode="a"
+        else:
+            mode="w"
+        with open("bookmarks.txt",mode) as file:
+            if title.isspace():
+               title=args.url.removeprefix("https://").removeprefix("http://")
+            file.write((args.url+"||"+title+"\n"))
+            print(f"{args.url} saved to bookmarks")
+    
 cmu_graphics.run()
