@@ -5,19 +5,26 @@ linkopener=1
 if not linkopener:
     import webbrowser as web
 
-app.lt=""
-app.y=10
-app.x=20
-app.elements=[]
-app.indented=False
-app.yold=10
-app.attrs=[]
-app.lastimg=""
-app.lastsnd=""
+app.lt = ""
+
+app.x = 20
+app.y = 10
+
+app.elements = []
+
+app.indented = False
+
+app.yold = 10
+
+app.attrs = []
+
+app.lastimg = ""
+app.lastsnd = ""
+
 src=""
 
 try:
-    with open("settings.cfg","r") as cfg:
+    with open("settings.cfg", "r") as cfg:
         lines=cfg.readlines()
         lines=[line.split("=")[1].strip() for line in lines]
         app.scrollspeed=int(lines[1])
@@ -32,98 +39,107 @@ except:
     app.textcolor="black"
 
 argparser = argparse.ArgumentParser(description='super epic html parser')
-argparser.add_argument('-i',"--input", help='Path to the input file.')
-argparser.add_argument("-u","--url",help="")
-args=argparser.parse_args()
+argparser.add_argument('-i', "--input", help='Path to the input file.')
+argparser.add_argument("-u", "--url", help="")
+args = argparser.parse_args()
 
 if args.url:
-    title=args.url.removeprefix("https://").removeprefix("http://")
+    title = args.url.removeprefix("https://").removeprefix("http://")
     try:
         if args.url.endswith(".htm"):
-            app.elements.append(Image(os.path.basename(args.url)+"/favicon.ico",app.x-10,app.y))
+            app.elements.append(Image(os.path.basename(args.url) + "/favicon.ico", app.x-10, app.y))
         else:
-            app.elements.append(Image(args.url+"/favicon.ico",app.x-10,app.y))
-        app.y+=(app.elements[-1].bottom-app.elements[-1].top)+10
+            app.elements.append(Image(args.url + "/favicon.ico", app.x-10, app.y))
+        app.y += (app.elements[-1].bottom - app.elements[-1].top) + 10
     except:
-        print(args.url+"/favicon.ico")
+        print(args.url + "/favicon.ico")
         print("failed to load favicon")
     
 try:
-    print("Accessing file from "+args.url)
+    print("Accessing file from " + args.url)
 except:
     pass
 
 def left():
     if app.indented:
-        app.elements[-1].left=app.x+20
+        app.elements[-1].left = app.x + 20
     else:
-        app.elements[-1].left=app.x
-    app.x=app.elements[-1].right+10
+        app.elements[-1].left = app.x
+    app.x = app.elements[-1].right + 10
 
             
 class MyHTMLParser(HTMLParser):
-    def handle_starttag(self,tag,attrs):
-        app.lt=tag
-        app.attrs=attrs
-        if tag=="br":
-            app.y+=15
-            app.x=20
-        elif tag=="hr":
-            app.y+=20
-            app.elements.append(Line(5,app.y,395,app.y,fill="grey",lineWidth=1))
-            app.y+=20
-            app.x=20
+    def handle_starttag(self, tag, attrs):
+        app.lt = tag
+        app.attrs = attrs
+        if tag == "br":
+            app.y += 15
+            app.x = 20
+        elif tag == "hr":
+            app.y += 20
+            app.elements.append(Line(5, app.y, 395, app.y, fill = "grey", lineWidth=1))
+            app.y += 20
+            app.x = 20
     
-    def handle_endtag(self,tag):
-        if tag=="ul" and app.indented:
-            app.indented=False
+    def handle_endtag(self, tag):
+        if tag == "ul" and app.indented:
+            app.indented = False
         
         
-    def handle_data(self,data):
-        global src,title
-        if app.lt=="text":
-            app.elements.append(Label(data,app.x,app.y,fill=app.textcolor))
+    def handle_data(self, data):
+        global src, title
+
+        if app.lt == "text":
+            app.elements.append(Label(data, app.x, app.y, fill = app.textcolor))
             left()
-        elif app.lt=="p":
-            app.y+=20
-            app.elements.append(Label(data,app.x,app.y,fill=app.textcolor))
+
+        elif app.lt == "p":
+            app.y += 20
+            app.elements.append(Label(data, app.x, app.y, fill = app.textcolor))
             left()
-            app.y+=20
-        elif app.lt=="h1":
-            app.y+=30
-            app.elements.append(Label(data,app.x,app.y,size=20,bold=True,fill=app.textcolor))
+            app.y += 20
+
+        elif app.lt == "h1":
+            app.y += 30
+            app.elements.append(Label(data, app.x, app.y, size=20, bold=True, fill = app.textcolor))
             left()
-            app.y+=10
-        elif app.lt=="i" or app.lt=="em":
-            app.elements.append(Label(data,app.x,app.y,italic=True,fill=app.textcolor))
+            app.y += 10
+
+        elif app.lt == "i" or app.lt == "em":
+            app.elements.append(Label(data, app.x, app.y, italic=True, fill = app.textcolor))
             left()
-        elif app.lt=="u":
-            app.elements.append(Label(data,app.x,app.y,fill=app.textcolor))
+
+        elif app.lt == "u":
+            app.elements.append(Label(data, app.x, app.y, fill = app.textcolor))
             left()
             app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,lineWidth=1))
-        elif app.lt=="a":
+
+        elif app.lt == "a":
+
             if app.textcolor=="white":
                 tmp="cyan"
+
             else:
                 tmp="blue"
-            app.elements.append(Label(data,app.x,app.y,fill=tmp))
+
+            app.elements.append(Label(data,app.x,app.y,fill = tmp))
             app.elements[-1].url=app.attrs[-1][-1]
             app.elements[-1].type="hyperlink"
             left()
-            app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,fill=tmp,lineWidth=1))
+            app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,fill = tmp,lineWidth=1))
         elif app.lt=="strong":
-            app.elements.append(Label(data,app.x,app.y,bold=True,fill=app.textcolor))
+            app.elements.append(Label(data,app.x,app.y,bold=True,fill = app.textcolor))
             left()
         elif app.lt=="ul":
             app.y+=20
-            app.elements.append(Label(data,app.x+20,app.y,fill=app.textcolor))
+            app.elements.append(Label(data,app.x+20,app.y,fill = app.textcolor))
             app.elements[-1].left=30
             app.y+=20
             app.indented=True
         elif app.lt=="li":
             app.elements.append(Circle(app.x-10,app.y+1,3))
             left()
-            app.elements.append(Label(data,app.x-10,app.y,fill=app.textcolor))
+            app.elements.append(Label(data,app.x-10,app.y,fill = app.textcolor))
             app.elements[-1].left=app.elements[-2].right+20
             app.y+=20
         elif app.lt=="img":
@@ -166,9 +182,9 @@ class MyHTMLParser(HTMLParser):
         elif app.lt=="button":
             temp=Label(data,app.x,app.y)
             if app.textcolor!="white":
-                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="lightGrey",border="black"),Label(data,app.x,app.y,fill=app.textcolor)))
+                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill = "lightGrey",border="black"),Label(data,app.x,app.y,fill = app.textcolor)))
             else:
-                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="grey",border="black"),Label(data,app.x,app.y,fill=app.textcolor)))
+                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill = "grey",border="black"),Label(data,app.x,app.y,fill = app.textcolor)))
             left()
             temp.visible=False
         elif app.lt=="source":
@@ -180,7 +196,7 @@ class MyHTMLParser(HTMLParser):
             else:
                 print(src)
                 temp=Label(os.path.basename(src),app.x,app.y)
-                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill="lightGrey",border="black"),Label(os.path.basename(src),app.x,app.y)))
+                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill = "lightGrey",border="black"),Label(os.path.basename(src),app.x,app.y)))
                 left()
                 temp.visible=False
                 if src.startswith("http"):
@@ -219,8 +235,8 @@ def onMousePress(x,y):
             try:
                 element.url
                 if element.type=="hyperlink":
-                    element.fill="purple"
-                    app.elements[app.elements.index(element)+1].fill="purple"
+                    element.fill = "purple"
+                    app.elements[app.elements.index(element)+1].fill = "purple"
                     print("opening URL "+element.url)
                     if linkopener:
                         if element.url.startswith("http"):
