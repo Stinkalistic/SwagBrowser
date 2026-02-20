@@ -1,0 +1,5 @@
+cmu-graphics==1.1.45
+html-parser==0.2
+ply==3.11
+pycairo==1.29.0
+pygame-ce==2.5.6
