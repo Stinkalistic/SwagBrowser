@@ -90,76 +90,78 @@ class MyHTMLParser(HTMLParser):
     def handle_data(self, data):
         global src, title
 
-        if app.lt == "text":
-            app.elements.append(Label(data, app.x, app.y, fill = app.textcolor))
-            left()
+        match app.lt:
+            case "text":
+                app.elements.append(Label(data, app.x, app.y, fill = app.textcolor))
+                left()
 
-        elif app.lt == "p":
-            app.y += 20
-            app.elements.append(Label(data, app.x, app.y, fill = app.textcolor))
-            left()
-            app.y += 20
+            case "p":
+                app.y += 20
+                app.elements.append(Label(data, app.x, app.y, fill = app.textcolor))
+                left()
+                app.y += 20
 
-        elif app.lt == "h1":
-            app.y += 30
-            app.elements.append(Label(data, app.x, app.y, size=20, bold=True, fill = app.textcolor))
-            left()
-            app.y += 10
+            case "h1":
+                app.y += 30
+                app.elements.append(Label(data, app.x, app.y, size=20, bold=True, fill = app.textcolor))
+                left()
+                app.y += 10
+            
+            case "i" | "em":
+                app.elements.append(Label(data, app.x, app.y, italic=True, fill = app.textcolor))
+                left()
 
-        elif app.lt == "i" or app.lt == "em":
-            app.elements.append(Label(data, app.x, app.y, italic=True, fill = app.textcolor))
-            left()
+            case "u":
+                app.elements.append(Label(data, app.x, app.y, fill = app.textcolor))
+                left()
+                app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,lineWidth=1))
 
-        elif app.lt == "u":
-            app.elements.append(Label(data, app.x, app.y, fill = app.textcolor))
-            left()
-            app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,lineWidth=1))
+            case "a":
+                if app.textcolor=="white":
+                    tmp="cyan"
 
-        elif app.lt == "a":
+                else:
+                    tmp="blue"
 
-            if app.textcolor=="white":
-                tmp="cyan"
+                app.elements.append(Label(data,app.x,app.y,fill = tmp))
+                app.elements[-1].url=app.attrs[-1][-1]
+                app.elements[-1].type="hyperlink"
+                left()
+                app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,fill = tmp,lineWidth=1))
 
-            else:
-                tmp="blue"
+            case "strong":
+                app.elements.append(Label(data,app.x,app.y,bold=True,fill = app.textcolor))
+                left()
 
-            app.elements.append(Label(data,app.x,app.y,fill = tmp))
-            app.elements[-1].url=app.attrs[-1][-1]
-            app.elements[-1].type="hyperlink"
-            left()
-            app.elements.append(Line(app.elements[-1].left,app.y+5,app.elements[-1].right,app.y+5,fill = tmp,lineWidth=1))
-        elif app.lt=="strong":
-            app.elements.append(Label(data,app.x,app.y,bold=True,fill = app.textcolor))
-            left()
-        elif app.lt=="ul":
-            app.y+=20
-            app.elements.append(Label(data,app.x+20,app.y,fill = app.textcolor))
-            app.elements[-1].left=30
-            app.y+=20
-            app.indented=True
-        elif app.lt=="li":
-            app.elements.append(Circle(app.x-10,app.y+1,3))
-            left()
-            app.elements.append(Label(data,app.x-10,app.y,fill = app.textcolor))
-            app.elements[-1].left=app.elements[-2].right+20
-            app.y+=20
-        elif app.lt=="img":
-            for i in range(len(app.attrs)):
-                if app.attrs[i][0]=="src":
-                    src=app.attrs[i][1]
-            if src==app.lastimg:
-                app.lastimg=src
-            else:
-                if not os.path.exists(data):
-                    for i in range(len(app.attrs)):
-                        if app.attrs[i][0]=="src":
-                            src=app.attrs[i][1]
-                    if src.startswith("http"):
-                        try:
-                            app.elements.append(Image(src,app.x-10,app.y))
-                            app.lastimg=src
-                        except:
-                            pass
+            case "ul":
+                app.y+=20
+                app.elements.append(Label(data,app.x+20,app.y,fill = app.textcolor))
+                app.elements[-1].left=30
+                app.y+=20
+                app.indented=True
+            case "li":
+                app.elements.append(Circle(app.x-10,app.y+1,3))
+                left()
+                app.elements.append(Label(data,app.x-10,app.y,fill = app.textcolor))
+                app.elements[-1].left=app.elements[-2].right+20
+                app.y+=20
+            case "img":
+                for i in range(len(app.attrs)):
+                    if app.attrs[i][0]=="src":
+                        src=app.attrs[i][1]
+                if src==app.lastimg:
+                    app.lastimg=src
+                else:
+                    if not os.path.exists(data):
+                        for i in range(len(app.attrs)):
+                            if app.attrs[i][0]=="src":
+                                src=app.attrs[i][1]
+                        if src.startswith("http"):
+                            try:
+                                app.elements.append(Image(src,app.x-10,app.y))
+                                app.lastimg=src
+                            except:
+                                pass
                     else:
                         try:
                             if not args.url.endswith(".htm") and not args.url.endswith(".html"):
@@ -171,30 +173,30 @@ class MyHTMLParser(HTMLParser):
                         except Exception as e:
                             print(e)
                             app.elements.append(Image("https://cdn.jsdelivr.net/gh/Stinkalistic/SwagBrowser/missing.png",app.x-10,app.y))
-                else:
-                    app.elements.append(Image(data,app.x-10,app.y))
-                    app.lastimg=src
+            
+                app.elements.append(Image(data,app.x-10,app.y))
+                app.lastimg=src
                 app.y+=(app.elements[-1].bottom-app.elements[-1].top)+10            
-        elif app.lt=="title":
-            print(data)
-            title=data
-        elif app.lt=="color":
-            app.background=data
-        elif app.lt=="button":
-            temp=Label(data,app.x,app.y)
-            if app.textcolor!="white":
-                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill = "lightGrey",border="black"),Label(data,app.x,app.y,fill = app.textcolor)))
-            else:
-                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill = "grey",border="black"),Label(data,app.x,app.y,fill = app.textcolor)))
-            left()
-            temp.visible=False
-        elif app.lt=="source":
-            for i in range(len(app.attrs)):
-                if app.attrs[i][0]=="src":
-                    src=app.attrs[i][1]
-            if src==app.lastsnd:
-                app.lastsnd=src
-            else:
+            case "title":
+                print(data)
+                title=data
+            case "color":
+                app.background=data
+            case "button":
+                temp=Label(data,app.x,app.y)
+                if app.textcolor!="white":
+                    app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill = "lightGrey",border="black"),Label(data,app.x,app.y,fill = app.textcolor)))
+                else:
+                    app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill = "grey",border="black"),Label(data,app.x,app.y,fill = app.textcolor)))
+                left()
+                temp.visible=False
+            case "source":
+                for i in range(len(app.attrs)):
+                    if app.attrs[i][0]=="src":
+                        src=app.attrs[i][1]
+                if src==app.lastsnd:
+                    app.lastsnd=src
+            case _:
                 print(src)
                 temp=Label(os.path.basename(src),app.x,app.y)
                 app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill = "lightGrey",border="black"),Label(os.path.basename(src),app.x,app.y)))
