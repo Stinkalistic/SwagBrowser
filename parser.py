@@ -176,12 +176,15 @@ class MyHTMLParser(HTMLParser):
             
                 app.elements.append(Image(data,app.x-10,app.y))
                 app.lastimg=src
-                app.y+=(app.elements[-1].bottom-app.elements[-1].top)+10            
+                app.y+=(app.elements[-1].bottom-app.elements[-1].top)+10     
+
             case "title":
                 print(data)
                 title=data
+
             case "color":
                 app.background=data
+
             case "button":
                 temp=Label(data,app.x,app.y)
                 if app.textcolor!="white":
@@ -190,54 +193,61 @@ class MyHTMLParser(HTMLParser):
                     app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill = "grey",border="black"),Label(data,app.x,app.y,fill = app.textcolor)))
                 left()
                 temp.visible=False
+
             case "source":
                 for i in range(len(app.attrs)):
                     if app.attrs[i][0]=="src":
                         src=app.attrs[i][1]
+
                 if src==app.lastsnd:
                     app.lastsnd=src
+                    
             case _:
                 print(src)
                 temp=Label(os.path.basename(src),app.x,app.y)
-                app.elements.append(Group(Rect(temp.left-5,temp.top-5,temp.right+5-temp.left+5,22,fill = "lightGrey",border="black"),Label(os.path.basename(src),app.x,app.y)))
+                app.elements.append(Group(
+                    Rect(temp.left - 5, temp.top - 5, temp.right + 5 - temp.left + 5, 22, fill = "lightGrey", border="black"),
+                    Label(os.path.basename(src),app.x,app.y)))
                 left()
                 temp.visible=False
                 if src.startswith("http"):
                     app.elements[-1].sound=Sound(src)
                 else:
                     if args.url.endswith(".html") or args.url.endswith(".htm"):
-                        app.elements[-1].sound=Sound((os.path.dirname(args.url)+"/"+src))
+                        app.elements[-1].sound = Sound((os.path.dirname(args.url) + "/" + src))
                     else:
-                        app.elements[-1].sound=Sound((args.url+src))
-                app.lastsnd=src
+                        app.elements[-1].sound = Sound((args.url + src))
+                app.lastsnd = src
         
-        if app.y>app.yold:
-            app.yold=app.y
-            app.x=20
+        if app.y > app.yold:
+            app.yold = app.y
+            app.x = 20
 
 
 
 
-parser=MyHTMLParser()
+parser = MyHTMLParser()
 
 if not args.input:
     i=input("enter html or name of file: \n")
 else:
     i=args.input
+
 try:
     with open(i,"r") as f:
         lines=f.readlines()
         for j in range(len(lines)):
             parser.feed(lines[j])
+
 except:
     parser.feed(i)
 
 def onMousePress(x,y):
     for element in app.elements:
-        if element.contains(x,y):
+        if element.contains(x, y):
             try:
                 element.url
-                if element.type=="hyperlink":
+                if element.type == "hyperlink":
                     element.fill = "purple"
                     app.elements[app.elements.index(element)+1].fill = "purple"
                     print("opening URL "+element.url)
@@ -288,14 +298,14 @@ def onKeyHold(keys):
             
 def onKeyPress(key):
     global title
-    if key=="b" and args.url:
+    if key == "b" and args.url:
         if os.path.exists("bookmarks.txt"):
-            mode="a"
+            mode = "a"
         else:
-            mode="w"
-        with open("bookmarks.txt",mode) as file:
+            mode = "w"
+        with open("bookmarks.txt", mode) as file:
             if title.isspace():
-               title=args.url.removeprefix("https://").removeprefix("http://")
+               title = args.url.removeprefix("https://").removeprefix("http://")
             file.write((args.url+"||"+title+"\n"))
             print(f"{args.url} saved to bookmarks")
     
