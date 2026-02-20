@@ -22,7 +22,7 @@ app.attrs = []
 app.lastimg = ""
 app.lastsnd = ""
 
-src=""
+src = ""
 
 try:
     with open("settings.cfg", "r") as cfg:
