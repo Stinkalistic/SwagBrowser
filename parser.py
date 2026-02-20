@@ -1,5 +1,5 @@
 from html.parser import HTMLParser
-from cmu_graphics import *
+from cmu_graphics import app, rgb, Image, Line, Label, Circle, Group, Rect
 import argparse,subprocess,os,requests
 linkopener=1
 if not linkopener:
