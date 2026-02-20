@@ -1,6 +1,7 @@
 from html.parser import HTMLParser
 from cmu_graphics import app, rgb, Image, Line, Label, Circle, Group, Rect, Sound, cmu_graphics
-import argparse,subprocess,os,requests
+import argparse, subprocess, os
+
 linkopener=1
 if not linkopener:
     import webbrowser as web
